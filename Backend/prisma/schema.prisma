@@ -1,0 +1,103 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("LOCAL_DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  investments   Investment[]
+  deposits      Deposit[]
+  withdrawals   Withdrawal[]
+}
+
+model InvestmentPlan {
+  id              Int      @id @default(autoincrement())
+  name            PlanType @unique
+  description     String?
+  minDeposit      Float
+  maxDeposit      Float
+  profitPercentage Float
+  durationInDays  Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  investments     Investment[]
+}
+
+model Investment {
+  id                Int            @id @default(autoincrement())
+  user              User           @relation(fields: [userId], references: [id])
+  userId            Int
+  plan              InvestmentPlan @relation(fields: [investmentPlanId], references: [id])
+  investmentPlanId  Int
+  amount            Float
+  paymentMethod     PaymentMethod
+  earnings          Float          @default(0)
+  totalProfit       Float          @default(0)
+  activationDate    DateTime       @default(now())
+  endDate           DateTime
+  status            InvestmentStatus
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Deposit {
+  id            Int           @id @default(autoincrement())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        Int
+  amount        Float
+  paymentMethod PaymentMethod
+  status        TransactionStatus
+  date          DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Withdrawal {
+  id               Int           @id @default(autoincrement())
+  user             User          @relation(fields: [userId], references: [id])
+  userId           Int
+  amount           Float
+  withdrawalMethod PaymentMethod
+  status           TransactionStatus
+  date             DateTime      @default(now())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+enum PlanType {
+  STARTER
+  SILVER
+  GOLD
+}
+
+enum PaymentMethod {
+  BITCOIN
+  ETHEREUM
+  USDT
+  BANK_TRANSFER
+}
+
+enum InvestmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
