@@ -4,6 +4,7 @@ import cors from 'cors';
 import protect from './helpers/protect';
 //import authenticationRoute from './routes/authentication';
 //import routes from './routes/index';
+import healthCheck from './handlers/healthcheck';
 import helmet from 'helmet';
 
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({extended: true}))
 //app.use("/api/auth", authenticationRoute)
 //app.use("/api", protect, routes)
 
+app.get('/status', healthCheck)
 
 
 export default app;
