@@ -1,9 +1,8 @@
-import { Router } from "express";
-
+import { Router } from 'express';
+import dashboardRouter from "./dashboard"
 
 const router = Router();
- // Difine the routes here
-// router.use(organisationRouter);
 
+router.use(dashboardRouter);
 
 export default router;
